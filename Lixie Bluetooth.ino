@@ -14,9 +14,10 @@ Adafruit_NeoPixel pixel_D = Adafruit_NeoPixel(NUMPIXELS, PIN_D, NEO_GRB + NEO_KH
 
 int delayval = 1000;  // timing delay in milliseconds 
 int k = 0;  // Color type : R/G/B 
+int num = 0  // divergence
 int N1, N2, N3, N4, N5, N6, N7, N8;
 int Col[3] = {0,0,0}; // RGB array
-int Digit_A[2], Digit_B[2], Digit_C[2], Digit_D[2];  // 2 numbers of second
+int Digit[8]; 
 int output_A[2][2], output_B[2][2], output_C[2][2], output_D[2][2];
 
 
@@ -40,30 +41,28 @@ void setup() {
 void loop() { 
   DateTime now = rtc.now();
   
-  N1 = now.hour()/10;
-  N2 = now.hour()%10;
+  N1 = 1 + (now.hour()/10);
+  N2 = 1 + (now.hour()%10);
   N3 = 0;
-  N4 = now.minute()/10;
-  N5 = now.minute()%10;
+  N4 = 1 + (now.minute()/10);
+  N5 = 1 + (now.minute()%10);
   N6 = 0;
-  N7 = now.second()/10;
-  N8 = now.second()%10;
+  N7 = 1 + (now.second()/10);
+  N8 = 1 + (now.second()%10);
   
-  Digit_A[0] = N1;
-  Digit_A[1] = N2;
-  Digit_B[0] = N3;
-  Digit_B[1] = N4;
-  Digit_C[0] = N5;
-  Digit_C[1] = N6;
-  Digit_D[0] = N7;
-  Digit_D[1] = N8;
+  Digit[0] = N1;
+  Digit[1] = N2;
+  Digit[2] = N3;
+  Digit[3] = N4;
+  Digit[4] = N5;
+  Digit[5] = N6;
+  Digit[6] = N7;
+  Digit[7] = N8;
 
   setColor(k);
 
-  numMatch(Digit_A, output_A);
-  numMatch(Digit_B, output_B);
-  numMatch(Digit_C, output_C);
-  numMatch(Digit_D, output_D);
+  numMatch(Digit, output_A, output_B, output_C, output_D);
+
 
   for(int p=0; p<2; p++){
     for (int q=0;q<2; q++){
@@ -88,10 +87,8 @@ void loop() {
     }
   } // Lights off
   
-  delay(delayval);
+  // delay(delayval);
   
-  //k++;
-  //if(k>2) k=k-3;
 }
 
 void setColor(int i) {
@@ -101,9 +98,125 @@ void setColor(int i) {
   Col[i]=255;
 }
 
-void numMatch(int array[2], int matrix[2][2]){
-  matrix[0][0] = numTable[0][array[0]][0];
-  matrix[0][1] = numTable[0][array[0]][1];
-  matrix[1][0] = numTable[1][array[1]][0];
-  matrix[1][1] = numTable[1][array[1]][1]; 
+void numMatch(int array[8], int matrix_A[2][2], matrix_B[2][2], matrix_C[2][2], matrix_D[2][2]){
+  matrix_A[0][0] = numTable[0][array[0]][0];
+  matrix_A[0][1] = numTable[0][array[0]][1];
+  matrix_A[1][0] = numTable[1][array[1]][0];
+  matrix_A[1][1] = numTable[1][array[1]][1];
+  
+  matrix_B[0][0] = numTable[0][array[2]][0];
+  matrix_B[0][1] = numTable[0][array[2]][1];
+  matrix_B[1][0] = numTable[1][array[3]][0];
+  matrix_B[1][1] = numTable[1][array[3]][1]; 
+  
+  matrix_C[0][0] = numTable[0][array[4]][0];
+  matrix_C[0][1] = numTable[0][array[4]][1];
+  matrix_C[1][0] = numTable[1][array[5]][0];
+  matrix_C[1][1] = numTable[1][array[5]][1]; 
+  
+  matrix_D[0][0] = numTable[0][array[6]][0];
+  matrix_D[0][1] = numTable[0][array[6]][1];
+  matrix_D[1][0] = numTable[1][array[7]][0];
+  matrix_D[1][1] = numTable[1][array[7]][1]; 
 } // output LED strip number that corresponds to input digit
+
+
+void divergence(){
+  randomSeed(analogRead(5));
+  int s;
+  switch(num){
+    case 0:
+      for(s=0; s<8; s++){
+        Digit[s]=random(0,9);
+      }    
+      
+    case 1:
+      for(s=0; s<8; s++){
+        Digit[s]=random(0,9);
+      }
+      N8 = random(0,9);
+      Digit[7]=N8;
+      break;
+      
+     case 2:
+      for(s=0; s<7; s++){
+        Digit[s]=random(0,9);
+      }
+      N7 = random(0,9);
+      Digit[6]=N7;
+      Digit[7]=N8;
+      break;
+      
+     case 3:
+      for(s=0; s<6; s++){
+        Digit[s]=random(0,9);
+      }
+      N6 = random(0,9);
+      Digit[5]=N6;
+      Digit[6]=N7;
+      Digit[7]=N8;
+      break;
+      
+     case 4:
+      for(s=0; s<5; s++){
+        Digit[s]=random(0,9);
+      }
+      N5 = random(0,9);
+      Digit[4]=N5;
+      Digit[5]=N6;
+      Digit[6]=N7;
+      Digit[7]=N8;
+      break;
+      
+     case 5:
+      for(s=0; s<4; s++){
+        Digit[s]=random(0,9);
+      }
+      N4 = random(0,9);
+      Digit[3]=N4;
+      Digit[4]=N5;
+      Digit[5]=N6;
+      Digit[6]=N7;
+      Digit[7]=N8;
+      break;
+      
+     case 6:
+      for(s=0; s<3; s++){
+        Digit[s]=random(0,9);
+      }
+      N3 = random(0,9);
+      Digit[2]=N3;
+      Digit[3]=N4;
+      Digit[4]=N5;
+      Digit[5]=N6;
+      Digit[6]=N7;
+      Digit[7]=N8;
+      break;
+      
+     case 7:
+      for(s=0; s<2; s++){
+        Digit[s]=random(0,9);
+      }
+      N2 = 1;
+      Digit[1]=N2;
+      Digit[2]=N3;
+      Digit[3]=N4;
+      Digit[4]=N5;
+      Digit[5]=N6;
+      Digit[6]=N7;
+      Digit[7]=N8;
+      break;
+     
+     case 8:
+      N1 = 0;
+      Digit[0]=N1
+      Digit[1]=N2;
+      Digit[2]=N3;
+      Digit[3]=N4;
+      Digit[4]=N5;
+      Digit[5]=N6;
+      Digit[6]=N7;
+      Digit[7]=N8;
+      break;
+  }
+}
